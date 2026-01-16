@@ -1,0 +1,170 @@
+city_selection:
+  description: >
+    **Task**: Analyze and select the SINGLE best city for the trip
+    
+    **Context**: You have access to general travel knowledge. Use web search ONLY for:
+    1. Current flight prices from {origin} to candidate cities
+    2. Weather forecast for {travel_dates}
+    3. Any major events/festivals during travel period
+    
+    **Criteria to evaluate**:
+    - Flight availability and cost from {origin}
+    - Weather conditions during {travel_dates}
+    - Alignment with interests: {interests}
+    - Value for money (accommodation, food, activities)
+    - Safety and accessibility
+    
+    **Instructions**:
+    - Make MAX 2-3 targeted web searches for flight prices and weather
+    - IMPORTANT: Use only ONE tool at a time. Do NOT pass a list of arguments. Execute flight search and weather search as SEPARATE steps.
+    - Use your knowledge base for general destination information
+    - Compare cities systematically using a scoring matrix
+    - Select ONE best city and provide clear justification
+    
+    **Parameters**:
+    - Origin: {origin}
+    - Candidate Cities: {cities}
+    - Travel Dates: {travel_dates}
+    - Trip Duration: {trip_days} days
+    - Interests: {interests}
+    - Budget: {tip_amount} {currency} (for {travelers} traveler(s))
+    - Number of Travelers: {travelers}
+    - Currency: {currency} (Display all prices in this currency)
+
+  expected_output: >
+    A concise report (300-500 words) containing:
+    1. Selected City: [City Name]
+    2. Justification: Why this city is best
+    3. Flight Cost Estimate: Price range in {currency} per person and TOTAL for {travelers} traveler(s)
+    4. Weather Forecast: What to expect during {travel_dates}
+    5. Budget Feasibility: Is {tip_amount} {currency} sufficient for {travelers} traveler(s)?
+    6. Key Highlights: Top 3 reasons to visit
+    
+  agent: city_selection_expert
+
+local_tour_details:
+  description: >
+    **Task**: Provide comprehensive local insights for the selected city
+    
+    **Context**: Use the selected city from the previous task. You have knowledge about popular destinations.
+    
+    **What to research** (MAX 3-4 targeted searches):
+    1. Top attractions and must-visit places (search if needed)
+    2. Best local restaurants and food specialties (search if needed)
+    3. Local transportation options and costs
+    4. Cultural customs and practical tips
+    
+    **Instructions**:
+    - Focus searches on specific, current information (restaurant reviews, ticket prices)
+    - Use general knowledge for cultural information
+    - Organize information by categories
+    - Include practical details (opening hours, costs, booking requirements)
+    
+    **Parameters**:
+    - Selected City: (from previous task)
+    - Travel Dates: {travel_dates}
+    - Trip Duration: {trip_days} days
+    - Interests: {interests}
+    - Budget: ${tip_amount}
+    
+  expected_output: >
+    A detailed guide (500-800 words) with:
+    
+    **Attractions & Activities**:
+    - Top 5-7 must-visit places with brief descriptions
+    - Estimated costs and time needed
+    - Booking requirements if any
+    
+    **Food & Dining**:
+    - 3-5 recommended restaurants (budget to mid-range)
+    - Local specialties to try
+    - Approximate meal costs
+    
+    **Practical Information**:
+    - Local transportation (metro, taxi, bike rental costs)
+    - Cultural dos and don'ts
+    - Safety tips
+    - Best neighborhoods to stay
+    
+    **Hidden Gems**: 2-3 off-the-beaten-path recommendations
+    
+  agent: local_tour_guide
+
+plan_itinerary:
+  description: >
+    **Task**: Create a comprehensive {trip_days}-day itinerary
+    
+    **Context**: Use the information from city selection and local guide tasks. DO NOT make any web searches - work with the information already gathered.
+    
+    **Instructions**:
+    - Create a balanced daily schedule (not too packed)
+    - Group nearby attractions for same-day visits
+    - Include breakfast, lunch, dinner suggestions
+    - Add estimated costs for each day
+    - Provide packing list
+    - Include emergency contacts and tips
+    
+    **Daily Schedule Format** (for each day):
+    - Morning (9 AM - 12 PM): Activity + Cost
+    - Lunch (12 PM - 2 PM): Restaurant + Cost
+    - Afternoon (2 PM - 6 PM): Activity + Cost
+    - Evening (6 PM - 10 PM): Activity/Dinner + Cost
+    - Daily Total Cost
+    
+    **Parameters**:
+    - Selected City: (from previous tasks)
+    - Travel Dates: {travel_dates}
+    - Trip Duration: {trip_days} days
+    - Interests: {interests}
+    - Budget: ${tip_amount}
+
+  expected_output: >
+    A complete markdown travel guide saved to reports folder with filename: {cities}_Travel_Guide.md
+    
+    The guide must include:
+    
+    # [City Name] {trip_days}-Day Travel Guide
+    
+    ## Trip Overview
+    - Dates: {travel_dates}
+    - Budget: ${tip_amount}
+    - Interests: {interests}
+    
+    ## Pre-Trip Preparation
+    - Flight booking recommendations
+    - Visa requirements (if any)
+    - Packing list
+    - Travel insurance suggestion
+    
+    ## Day-by-Day Itinerary
+    [Detailed schedule for each of {trip_days} days]
+    
+    ## Budget Breakdown
+    - Flights: $XXX
+    - Accommodation: $XXX ({trip_days} nights)
+    - Food: $XXX
+    - Transportation: $XXX
+    - Activities: $XXX
+    - Miscellaneous: $XXX
+    - **Total Estimated Cost**: $XXX
+    
+    ## Packing List
+    - Documents
+    - Clothing
+    - Electronics
+    - Health & Safety
+    - Optional items
+    
+    ## Important Information
+    - Emergency contacts
+    - Hospital locations
+    - Embassy information
+    - Local emergency numbers
+    
+    ## Useful Phrases (if applicable)
+    [Basic phrases in local language]
+    
+    ## Tips for Great Trip
+    [5-7 insider tips]
+    
+  agent: expert_travel_agent
