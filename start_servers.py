@@ -31,20 +31,18 @@ def main():
     script_dir = Path(__file__).parent
     os.chdir(script_dir)
     
-    # Check for virtual environment
-    print("📦 Checking virtual environment...")
-    venv_python = script_dir / ".venv" / ("Scripts" if sys.platform == "win32" else "bin") / ("python.exe" if sys.platform == "win32" else "python")
-    
-    if not venv_python.exists():
-        print_error("Virtual environment not found!")
-        print_info("Please run: uv sync")
+    # Check for uv
+    print("📦 Checking uv...")
+    try:
+        subprocess.run(["uv", "--version"], check=True, capture_output=True)
+        print_success("uv found")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print_error("uv not found! Please install uv: https://github.com/astral-sh/uv")
         sys.exit(1)
-    
-    print_success("Virtual environment found")
     
     # Start API server
     print("\n🔧 Starting API Server (port 8000)...")
-    api_cmd = [str(venv_python), "-m", "uvicorn", "trip_planner.api:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+    api_cmd = ["uv", "run", "uvicorn", "trip_planner.api:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
     
     try:
         api_process = subprocess.Popen(
@@ -68,7 +66,7 @@ def main():
     
     # Start Streamlit
     print("\n🎨 Starting Streamlit Frontend (port 8501)...")
-    streamlit_cmd = [str(venv_python), "-m", "streamlit", "run", "src/trip_planner/streamlit_app.py", "--server.port", "8501"]
+    streamlit_cmd = ["uv", "run", "streamlit", "run", "src/trip_planner/streamlit_app.py", "--server.port", "8501"]
     
     try:
         time.sleep(2)
